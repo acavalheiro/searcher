@@ -11,27 +11,26 @@
 
     using Product = Seacher.Domain.Models.Product;
 
-    public class ScrapperElCorteIngles : IScrapper
+    public class ScrapperElCorteIngles : BaseScrapper , IScrapper
     {
+
+        private const string searchUrl = "https://www.elcorteingles.pt/supermercado/pesquisar/?term={0}&search=text";
+
+        public ScrapperElCorteIngles()
+            : base(false)
+        {
+
+        }
         public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm)
         {
 
             var productsData = new List<Product>();
-            using var browserFetcher = new BrowserFetcher();
-            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
-            var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-            {
-                Headless = false
-            });
-            var page = await browser.NewPageAsync();
+            
             var keyword = HttpUtility.UrlEncode(searchTerm);
-            await page.GoToAsync($"https://www.elcorteingles.pt/supermercado/pesquisar/?term={keyword}&search=text");
+            var url = string.Format(searchUrl, keyword);
 
-            var content = await page.GetContentAsync();
-
-            var context = BrowsingContext.New(Configuration.Default);
-            var document = await context.OpenAsync(req => req.Content(content));
-
+            var document = await this.GetDocument(url);
+            
             var products = document.QuerySelectorAll("*")
                 .Where(e => e is { LocalName: "div", ClassName: not null } and IHtmlDivElement && e.ClassName.Contains("grid-item") && e.ClassName.Contains("js-product"))
                 .ToList();
@@ -75,7 +74,7 @@
                     });
 
 
-            await browser.CloseAsync();
+            
             return productsData.Where(x => x.Name is not null).ToList();
         }
 

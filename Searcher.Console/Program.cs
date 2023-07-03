@@ -14,9 +14,9 @@ Console.WriteLine("Search Product:");
 var keyword = Console.ReadLine();
 
 
-IScrapper continente = new ScrapperContinente();
-IScrapper auchan = new ScrapperAuchan();
-IScrapper elcorteIngles = new ScrapperElCorteIngles();
+using IScrapper continente = new ScrapperContinente();
+using IScrapper auchan = new ScrapperAuchan();
+using IScrapper elcorteIngles = new ScrapperElCorteIngles();
 
 
 var dataAuchan =  auchan.SearchProductsAsync(keyword);

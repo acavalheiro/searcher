@@ -11,7 +11,7 @@ using Seacher.Domain.Models;
 
 namespace Searcher.Scrappers
 {
-    public interface IScrapper
+    public interface IScrapper : IDisposable , IAsyncDisposable
     {
         /// <summary>
         /// The search products.

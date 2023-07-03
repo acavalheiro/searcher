@@ -19,27 +19,17 @@ namespace Searcher.Scrappers.Implementations
 
     using Product = Seacher.Domain.Models.Product;
 
-    public class ScrapperAuchan : IScrapper
+    public class ScrapperAuchan : BaseScrapper, IScrapper
     {
-        private readonly string _searchUrl = "https://www.auchan.pt/pt/pesquisa?q={0}&search-button=&lang=pt_PT";
+        private readonly string searchUrl = "https://www.auchan.pt/pt/pesquisa?q={0}&search-button=&lang=pt_PT";
 
         public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm)
         {
             var productsData = new List<Product>();
-            using var browserFetcher = new BrowserFetcher();
-            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
-            var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-                                                          {
-                                                              Headless = true
-                                                          });
-            var page = await browser.NewPageAsync();
             var keyword = HttpUtility.UrlEncode(searchTerm);
-            await page.GoToAsync(string.Format(this._searchUrl,keyword));
+            var url = string.Format(searchUrl, keyword);
 
-            var content = await page.GetContentAsync();
-
-            var context = BrowsingContext.New(Configuration.Default);
-            var document = await context.OpenAsync(req => req.Content(content));
+            var document = await this.GetDocument(url);
 
             var products = document.QuerySelectorAll("*")
                 .Where(e => e is { LocalName: "div", ClassName: "product" })
