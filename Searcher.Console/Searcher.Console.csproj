@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Seacher.Domain\Seacher.Domain.csproj" />
+    <ProjectReference Include="..\Searcher.Persistence\Searcher.Persistence.csproj" />
     <ProjectReference Include="..\Searcher.Scrappers\Searcher.Scrappers.csproj" />
   </ItemGroup>
 

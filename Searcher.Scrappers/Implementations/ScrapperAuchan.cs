@@ -69,6 +69,11 @@ namespace Searcher.Scrappers.Implementations
             
         }
 
+        public Task<IEnumerable<Product>> ScrapByCategory(string category)
+        {
+            throw new NotImplementedException();
+        }
+
         private class ProductData
         {
 

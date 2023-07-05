@@ -23,5 +23,7 @@ namespace Searcher.Scrappers
         /// The <see cref="IEnumerable"/>.
         /// </returns>
         Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm);
+
+        Task<IEnumerable<Product>> ScrapByCategory(string category);
     }
 }

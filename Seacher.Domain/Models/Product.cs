@@ -13,6 +13,7 @@ namespace Seacher.Domain.Models
 
     public class Product
     {
+        public string? Id { get; set; }
         public string? Name { get; set; }
 
         public string Description { get; set; }
@@ -22,5 +23,9 @@ namespace Seacher.Domain.Models
         public string Brand { get; set; }
 
         public string EAN { get; set; }
+
+        public string Url { get; set; }
+
+        public string? Size { get; set; }
     }
 }

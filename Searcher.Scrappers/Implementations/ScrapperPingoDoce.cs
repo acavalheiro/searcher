@@ -11,12 +11,12 @@
 
     using Product = Seacher.Domain.Models.Product;
 
-    public class ScrapperElCorteIngles : BaseScrapper , IScrapper
+    public class ScrapperPingoDoce : BaseScrapper , IScrapper
     {
 
-        private const string searchUrl = "https://www.elcorteingles.pt/supermercado/pesquisar/?term={0}&search=text";
+        private const string searchUrl = "https://mercadao.pt/store/pingo-doce/search?queries={0}";
 
-        public ScrapperElCorteIngles()
+        public ScrapperPingoDoce()
             : base(false)
         {
 

@@ -6,6 +6,12 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using PuppeteerSharp;
 
+using Seacher.Domain.Common.Interfaces;
+using Seacher.Domain.Entities;
+
+using Searcher.Application.Repositories;
+using Searcher.Persistence.Contexts;
+using Searcher.Persistence.Repositories;
 using Searcher.Scrappers;
 using Searcher.Scrappers.Implementations;
 
@@ -18,28 +24,50 @@ using IScrapper continente = new ScrapperContinente();
 using IScrapper auchan = new ScrapperAuchan();
 using IScrapper elcorteIngles = new ScrapperElCorteIngles();
 
+using IDbContext dbContext = new ApplicationDbContext();
 
-var dataAuchan =  auchan.SearchProductsAsync(keyword);
-var dataContinente =  continente.SearchProductsAsync(keyword);
-var dataElcorteingles =  elcorteIngles.SearchProductsAsync(keyword);
+IProductScrapperRepository repo = new ProductScrapperRepository(dbContext);
 
 
-Task.WaitAll(dataAuchan, dataContinente, dataElcorteingles);
+//var dataAuchan =  auchan.SearchProductsAsync(keyword);
+//var dataContinente =  continente.SearchProductsAsync(keyword);
+//var dataElcorteingles =  elcorteIngles.SearchProductsAsync(keyword);
 
-foreach (var product in dataContinente.Result)
+var dataContinente = await continente.ScrapByCategory("");
+
+var products = dataContinente.ToList().Select(
+    x => new ProductScrapped()
+             {
+                 Name = x.Name,
+                 Brand = x.Brand,
+                 Url = x.Url,
+                 Value = x.Value,
+                 Size = x.Size,
+                 Description = x.Description,
+                 InternalId = x.Id,
+                 StoreId = 1
+             });
+
+await repo.AddRangeAsync(products);
+await dbContext.SaveChangesAsync(new CancellationToken());
+
+
+//Task.WaitAll(dataAuchan, dataContinente, dataElcorteingles);
+
+foreach (var product in dataContinente)
 {
     Console.WriteLine($"Store : Continente |    Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
 }
 
-foreach (var product in dataAuchan.Result)
-{
-    Console.WriteLine($"Store : Auchan |        Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
-}
+//foreach (var product in dataAuchan.Result)
+//{
+//    Console.WriteLine($"Store : Auchan |        Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
+//}
 
-foreach (var product in dataElcorteingles.Result)
-{
-    Console.WriteLine($"Store : ECI |        Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
-}
+//foreach (var product in dataElcorteingles.Result)
+//{
+//    Console.WriteLine($"Store : ECI |        Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
+//}
 
 
 
