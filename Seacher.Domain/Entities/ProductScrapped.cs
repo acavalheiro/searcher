@@ -13,10 +13,9 @@ namespace Seacher.Domain.Entities;
 
 public class ProductScrapped : BaseEntity<int>, IEntity<int>
 {
-    public ProductScrapped()
-    {
-        this.CreatedDate = DateTime.Now;
-    }
+    public ProductScrapped() => this.CreatedDate = DateTime.Now;
+
+
     public int StoreId { get; set; }
 
     public string? InternalId { get; set; }
@@ -36,5 +35,7 @@ public class ProductScrapped : BaseEntity<int>, IEntity<int>
 
     public string? Size { get; set; }
 
-    public DateTime CreatedDate { get; set; } 
+    public DateTime CreatedDate { get; set; }
+
+    public string RunCode { get; set; }
 }

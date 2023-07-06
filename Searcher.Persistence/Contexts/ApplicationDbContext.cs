@@ -47,6 +47,8 @@ public sealed class ApplicationDbContext : DbContext , IDbContext
         modelBuilder.Entity<ProductScrapped>().ToTable("ProductScrappeds").Property(p => p.Id)
             .HasColumnType("bigint");
 
+        modelBuilder.Entity<ProductScrapped>().Property(x => x.RunCode).IsRequired().HasMaxLength(40);
+
         base.OnModelCreating(modelBuilder);
     }
 }
