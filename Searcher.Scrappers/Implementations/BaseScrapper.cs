@@ -28,20 +28,33 @@ namespace Searcher.Scrappers.Implementations
         protected BaseScrapper()
         {
             this.browserFetcher = new BrowserFetcher();
-            Task.Run(async () => await this.browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision));
+            
         }
         protected BaseScrapper(bool headLess)
         {
             this.browserFetcher = new BrowserFetcher();
-            Task.Run(async () => await this.browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision));
+           
             this.headLess = headLess;
         }
 
         private async Task<IBrowser> SetupBrowser()
         {
+
+            await this.browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
             this.Browser ??= await Puppeteer.LaunchAsync(new LaunchOptions {Headless = this.headLess});
 
             return this.Browser;
+        }
+
+        public async Task<IPage> GetPageAsync(string url)
+        {
+            await this.SetupBrowser();
+
+            var page = await this.Browser.NewPageAsync();
+
+            await page.GoToAsync(url);
+
+            return page;
         }
 
         public async Task<IDocument> GetDocument(string url)

@@ -9,6 +9,7 @@
 
 namespace Searcher.Scrappers.Implementations
 {
+    using System.Reflection.Metadata;
     using System.Text.Json;
     using System.Web;
 
@@ -22,6 +23,8 @@ namespace Searcher.Scrappers.Implementations
 
     public class ScrapperAuchan : BaseScrapper, IScrapper
     {
+
+      
         private readonly string searchUrl = "https://www.auchan.pt/pt/pesquisa?q={0}&search-button=&lang=pt_PT";
 
         public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm)
@@ -74,23 +77,72 @@ namespace Searcher.Scrappers.Implementations
         {
             //https://www.auchan.pt/pt/alimentacao/
 
-            var urlBase = $"https://www.continente.pt/laticinios-e-ovos/?start=0&srule=FOOD-Laticinios&pmin=0.01";
+            var urlBase = $"https://www.auchan.pt/pt/alimentacao";
             var productsData = new List<Product>();
 
-            var page = await this.Browser.NewPageAsync();
 
-            await page.GoToAsync(urlBase);
+            var document = await this.GetDocument(urlBase);
 
-            Func<Task> scroll = null;
+            var footer = document.GetElementsByName("auc-js-search-results-total").FirstOrDefault() as IHtmlInputElement;
 
-            scroll = new Func<Task>(async () => {
-                    Console.WriteLine("Scrolling");
-                    await page.EvaluateExpressionAsync("window.scrollBy({top:10,behavior:'smooth'})");
-                    Thread.Sleep(100);
-                    await scroll();
-                });
+            if (footer is null)
+                return productsData;
 
-            return null;
+            if (!int.TryParse(footer.Value, out var totalProducts))
+                return productsData;
+
+
+            for (int i = 0; i < 200; i += 100)
+            {
+                // var url = $"https://www.continente.pt/mercearia/?start=0&srule=FOOD_Mercearia&pmin=0.01&start={i}&sz=100";
+                var url = $"{urlBase}/?sz=100&start={i}";
+                document = await this.GetDocument(url);
+
+                var products = document.QuerySelectorAll("*").Where(e => e is { LocalName: "div", ClassName: "product" }).ToList();
+
+                products.ForEach(
+                    productItem =>
+                    {
+
+                        var product = this.GetProduct(productItem);
+
+                        if (product is not null)
+                            productsData.Add(product);
+                    });
+            }
+
+
+
+
+
+            return productsData;
+        }
+
+        private Product? GetProduct(IElement product)
+        {
+            var elementData = product.QuerySelectorAll("*").FirstOrDefault(s => s is { LocalName: "div", ClassName: not null } and IHtmlDivElement && s.ClassName.Contains("product-tile"));
+
+            if (elementData is null)
+                return null;
+
+
+            var elementDataJson = elementData.Attributes["data-gtm"]?.Value;
+
+
+            if (elementDataJson is null)
+                return null;
+
+
+
+            var data = JsonSerializer.Deserialize<ProductData>(elementDataJson, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+            if (data is null) return null;
+
+
+            var productData = new Product() { Brand = data.Brand, Name = data.Name, Description = data.Category, Value = data.Price };
+
+
+            return new Product() { Brand = data.Brand, Name = data.Name, Description = data.Category, Value = data.Price, Id = data.Name};
         }
 
         private class ProductData
@@ -100,7 +152,7 @@ namespace Searcher.Scrappers.Implementations
 
             public string? Brand { get; set; }
 
-            public string Category { get; set; }
+            public string? Category { get; set; }
 
             public decimal? Price { get; set; }
         //    public string Brand { get; set; }
