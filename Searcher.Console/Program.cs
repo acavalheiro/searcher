@@ -33,31 +33,34 @@ IProductScrapperRepository repo = new ProductScrapperRepository(dbContext);
 //var dataContinente =  continente.SearchProductsAsync(keyword);
 //var dataElcorteingles =  elcorteIngles.SearchProductsAsync(keyword);
 
-var dataContinente = await continente.ScrapByCategory("");
+var data = await auchan.ScrapByCategory("");
 
-var products = dataContinente.ToList().Select(
-    x => new ProductScrapped()
-             {
-                 Name = x.Name,
-                 Brand = x.Brand,
-                 Url = x.Url,
-                 Value = x.Value,
-                 Size = x.Size,
-                 Description = x.Description,
-                 InternalId = x.Id,
-                 StoreId = 1
-             });
+//var runCode = $"RUN_{DateTime.UtcNow:yyMMdd}";
 
-await repo.AddRangeAsync(products);
-await dbContext.SaveChangesAsync(new CancellationToken());
+//var products = dataContinente.ToList().Select(
+//    x => new ProductScrapped()
+//             {
+//                 Name = x.Name,
+//                 Brand = x.Brand,
+//                 Url = x.Url,
+//                 Value = x.Value,
+//                 Size = x.Size,
+//                 Description = x.Description,
+//                 InternalId = x.Id,
+//                 StoreId = 1,
+//                 RunCode = runCode
+//             });
+
+//await repo.AddRangeAsync(products);
+//await dbContext.SaveChangesAsync(new CancellationToken());
 
 
 //Task.WaitAll(dataAuchan, dataContinente, dataElcorteingles);
 
-foreach (var product in dataContinente)
-{
-    Console.WriteLine($"Store : Continente |    Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
-}
+//foreach (var product in dataContinente)
+//{
+//    Console.WriteLine($"Store : Continente |    Name : {product.Name} ! Brand : {product.Brand} | Price : {product.Value}");
+//}
 
 //foreach (var product in dataAuchan.Result)
 //{
@@ -114,5 +117,7 @@ foreach (var product in dataContinente)
 //            }
 
 //        });
+
+Console.WriteLine("Done");
 
 Console.ReadLine();

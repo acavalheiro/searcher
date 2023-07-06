@@ -49,9 +49,10 @@ namespace Searcher.Scrappers.Implementations
         public async Task<IEnumerable<Product>> ScrapByCategory(string category)
         {
 
+            var urlBase = $"https://www.continente.pt/laticinios-e-ovos/?start=0&srule=FOOD-Laticinios&pmin=0.01";
             var productsData = new List<Product>();
 
-            var document = await this.GetDocument("https://www.continente.pt/mercearia/?start=0&srule=FOOD_Mercearia&pmin=0.01");
+            var document = await this.GetDocument(urlBase);
 
             var footer = document.QuerySelectorAll("*").FirstOrDefault(s => s is { LocalName: "div", ClassName: not null } and IHtmlDivElement && s.ClassName.Contains("grid-footer")) as IHtmlDivElement;
 
@@ -65,9 +66,10 @@ namespace Searcher.Scrappers.Implementations
 
             var totalProducts = int.Parse(elementDataJson);
 
-            for (int i = 0; i < 100; i+=100)
+            for (int i = 0; i < totalProducts; i+=100)
             {
-                var url = $"https://www.continente.pt/mercearia/?start=0&srule=FOOD_Mercearia&pmin=0.01&start={i}&sz={i + 100}";
+               // var url = $"https://www.continente.pt/mercearia/?start=0&srule=FOOD_Mercearia&pmin=0.01&start={i}&sz=100";
+                var url = $"{urlBase}&start={i}&sz=100";
                 document = await this.GetDocument(url);
 
                 var products = document.QuerySelectorAll("*").Where(e => e is { LocalName: "div", ClassName: "product" }).ToList();

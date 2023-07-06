@@ -22,7 +22,7 @@ namespace Searcher.Scrappers.Implementations
         
         private readonly BrowserFetcher browserFetcher;
 
-        private IBrowser? browser = null;
+        public  IBrowser? Browser = null;
 
 
         protected BaseScrapper()
@@ -39,9 +39,9 @@ namespace Searcher.Scrappers.Implementations
 
         private async Task<IBrowser> SetupBrowser()
         {
-            this.browser ??= await Puppeteer.LaunchAsync(new LaunchOptions {Headless = this.headLess});
+            this.Browser ??= await Puppeteer.LaunchAsync(new LaunchOptions {Headless = this.headLess});
 
-            return this.browser;
+            return this.Browser;
         }
 
         public async Task<IDocument> GetDocument(string url)
@@ -49,7 +49,9 @@ namespace Searcher.Scrappers.Implementations
             await this.SetupBrowser();
 
 
-            var page = await this.browser.NewPageAsync();
+            Console.WriteLine($"Url: {url}");
+
+            var page = await this.Browser.NewPageAsync();
             
             await page.GoToAsync(url);
 
@@ -61,14 +63,14 @@ namespace Searcher.Scrappers.Implementations
 
         public void Dispose()
         {
-            this.browser.Dispose();
-            this.browserFetcher.Dispose();
+            this.Browser?.Dispose();
+            this.browserFetcher?.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (this.browser is not null)
-                await this.browser.CloseAsync();
+            if (this.Browser is not null)
+                await this.Browser.CloseAsync();
 
 
            

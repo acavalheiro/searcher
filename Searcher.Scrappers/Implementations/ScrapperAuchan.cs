@@ -13,6 +13,7 @@ namespace Searcher.Scrappers.Implementations
     using System.Web;
 
     using AngleSharp;
+    using AngleSharp.Dom;
     using AngleSharp.Html.Dom;
 
     using PuppeteerSharp;
@@ -69,9 +70,27 @@ namespace Searcher.Scrappers.Implementations
             
         }
 
-        public Task<IEnumerable<Product>> ScrapByCategory(string category)
+        public async Task<IEnumerable<Product>> ScrapByCategory(string category)
         {
-            throw new NotImplementedException();
+            //https://www.auchan.pt/pt/alimentacao/
+
+            var urlBase = $"https://www.continente.pt/laticinios-e-ovos/?start=0&srule=FOOD-Laticinios&pmin=0.01";
+            var productsData = new List<Product>();
+
+            var page = await this.Browser.NewPageAsync();
+
+            await page.GoToAsync(urlBase);
+
+            Func<Task> scroll = null;
+
+            scroll = new Func<Task>(async () => {
+                    Console.WriteLine("Scrolling");
+                    await page.EvaluateExpressionAsync("window.scrollBy({top:10,behavior:'smooth'})");
+                    Thread.Sleep(100);
+                    await scroll();
+                });
+
+            return null;
         }
 
         private class ProductData
