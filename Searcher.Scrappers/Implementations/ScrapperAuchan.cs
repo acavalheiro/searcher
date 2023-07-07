@@ -92,7 +92,7 @@ namespace Searcher.Scrappers.Implementations
                 return productsData;
 
 
-            for (int i = 0; i < 200; i += 100)
+            for (int i = 0; i < totalProducts; i += 100)
             {
                 // var url = $"https://www.continente.pt/mercearia/?start=0&srule=FOOD_Mercearia&pmin=0.01&start={i}&sz=100";
                 var url = $"{urlBase}/?sz=100&start={i}";
@@ -142,12 +142,12 @@ namespace Searcher.Scrappers.Implementations
             var productData = new Product() { Brand = data.Brand, Name = data.Name, Description = data.Category, Value = data.Price };
 
 
-            return new Product() { Brand = data.Brand, Name = data.Name, Description = data.Category, Value = data.Price, Id = data.Name};
+            return new Product() { Brand = data.Brand, Name = data.Name, Description = data.Category, Value = data.Price, Id = data.Id};
         }
 
         private class ProductData
         {
-
+            public  string? Id { get; set; }
             public string? Name { get; set; }
 
             public string? Brand { get; set; }

@@ -35,24 +35,24 @@ IProductScrapperRepository repo = new ProductScrapperRepository(dbContext);
 
 var data = await auchan.ScrapByCategory("");
 
-//var runCode = $"RUN_{DateTime.UtcNow:yyMMdd}";
+var runCode = $"RUN_{DateTime.UtcNow:yyMMdd}";
 
-//var products = dataContinente.ToList().Select(
-//    x => new ProductScrapped()
-//             {
-//                 Name = x.Name,
-//                 Brand = x.Brand,
-//                 Url = x.Url,
-//                 Value = x.Value,
-//                 Size = x.Size,
-//                 Description = x.Description,
-//                 InternalId = x.Id,
-//                 StoreId = 1,
-//                 RunCode = runCode
-//             });
+var products = data.ToList().Select(
+    x => new ProductScrapped()
+    {
+        Name = x.Name,
+        Brand = x.Brand,
+        Url = x.Url,
+        Value = x.Value,
+        Size = x.Size,
+        Description = x.Description,
+        InternalId = x.Id,
+        StoreId = 2,
+        RunCode = runCode
+    });
 
-//await repo.AddRangeAsync(products);
-//await dbContext.SaveChangesAsync(new CancellationToken());
+await repo.AddRangeAsync(products);
+await dbContext.SaveChangesAsync(new CancellationToken());
 
 
 //Task.WaitAll(dataAuchan, dataContinente, dataElcorteingles);
